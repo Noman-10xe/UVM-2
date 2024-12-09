@@ -524,31 +524,29 @@ task body;
   bit [3:0] wdata;
   bit [3:0] dv, mv;     // Desired Value & Mirrored Values
 
-     wdata = 4'h3;
+     wdata = 4'h5;
      
 
      regmodel.cntrl_inst.write(status, wdata);
+     
      // Check 'dv' and 'mv' Values
-     dv = regmodel.cntrl_inst.get();             // Get Desired Value
-     mv = regmodel.cntrl_inst.get_mirrored_value();
-     `uvm_info("WRITE", $sformatf(" Desired Value = %0d, Mirrored Value = %0d ", dv, mv), UVM_NONE)
+		 dv = regmodel.cntrl_inst.get();                      // Get Desired Value
+		 mv = regmodel.cntrl_inst.get_mirrored_value();
+     `uvm_info("WRITE::5", $sformatf(" Desired Value = %0d, Mirrored Value = %0d ", dv, mv), UVM_NONE)
 
-     // Set the Desired value
-     regmodel.cntrl_inst.set(15);                // Set the Value to be 15
-     // Check again
-     dv = regmodel.cntrl_inst.get();             // Get Desired Value
-     mv = regmodel.cntrl_inst.get_mirrored_value();
-     `uvm_info("SET::15", $sformatf(" Desired Value = %0d, Mirrored Value = %0d ", dv, mv), UVM_NONE)
+     // Predict Value
+     regmodel.cntrl_inst.predict(4'h3);
+     dv = regmodel.cntrl_inst.get();                      // Get Desired Value
+		 mv = regmodel.cntrl_inst.get_mirrored_value();
+     `uvm_info("PREDICT::3", $sformatf(" Desired Value = %0d, Mirrored Value = %0d ", dv, mv), UVM_NONE)
 
-     // Update the Value to DUT
-     regmodel.cntrl_inst.update(status);          // Write the Value to DUT
-     // Check again
-     dv = regmodel.cntrl_inst.get();              // Get Desired Value
-     mv = regmodel.cntrl_inst.get_mirrored_value();
-     `uvm_info("UPDATE()", $sformatf(" Desired Value = %0d, Mirrored Value = %0d ", dv, mv), UVM_NONE)
+     // Mirror Value
+     regmodel.cntrl_inst.mirror(status, UVM_CHECK);
+     dv = regmodel.cntrl_inst.get();                      // Get Desired Value
+		 mv = regmodel.cntrl_inst.get_mirrored_value();
+     `uvm_info("MIRROR", $sformatf(" Desired Value = %0d, Mirrored Value = %0d ", dv, mv), UVM_NONE)
 
  endtask
-
 endclass
 
 
