@@ -400,7 +400,7 @@ reg4_reg  reg4_inst;
       //
       // HDL Path for BACKDOOR ACCESS
       //
-     /* add_hdl_path("dut");
+      add_hdl_path("dut");
       cntrl_inst.add_hdl_path_slice	(	"cntrl",		  // Name of the Physical Register in DUT 
                                 		  0, 				    // lsb position
                                 		  4				      // size = 4 bits
@@ -431,7 +431,6 @@ reg4_reg  reg4_inst;
 
       
       default_map.set_auto_predict(0);			        // explicit  prediction
-      */
       default_map.add_reg(cntrl_inst , 'h0, "RW");  // reg, offset, access
       default_map.add_reg(reg1_inst  , 'h4, "RW");  // reg, offset, access
       default_map.add_reg(reg2_inst  , 'h8, "RW");  // reg, offset, access
@@ -556,12 +555,12 @@ task body;
   bit [3:0] dv, mv;     // Desired Value & Mirrored Values
    
    //////working with control
-   regmodel.cntrl_inst.read(status, rdata, UVM_FRONTDOOR);
+   regmodel.cntrl_inst.peek(status, rdata);
 
      //Check 'dv' and 'mv' Values
 		 dv = regmodel.cntrl_inst.get();                      // Get Desired Value
 		 mv = regmodel.cntrl_inst.get_mirrored_value();
-     `uvm_info("READ::FRONTDOOR", $sformatf(" Desired Value = %0d, Mirrored Value = %0d ", dv, mv), UVM_NONE)
+     `uvm_info("PEEK", $sformatf(" Desired Value = %0d, Mirrored Value = %0d ", dv, mv), UVM_NONE)
 
  endtask
 
@@ -764,11 +763,11 @@ endfunction
 virtual task run_phase(uvm_phase phase);
 phase.raise_objection(this);
 
-// Write (FRONTDOOR)
+// Write (BACKDOOR)
 cwr.regmodel = e.regmodel;
 cwr.start(e.agent_inst.seqr);
 
-// Read (FRONTDOOR)
+// Read (BACKDOOR)
 crd.regmodel = e.regmodel;
 crd.start(e.agent_inst.seqr);
 
