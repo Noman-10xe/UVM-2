@@ -524,32 +524,17 @@ task body;
   bit [3:0] wdata;
   bit [3:0] dv, mv;     // Desired Value & Mirrored Values
 
-     wdata = 4'h5;
-     
+     wdata = $urandom();
 
-     regmodel.cntrl_inst.write(status, wdata);
-     
-     // Check 'dv' and 'mv' Values
+     regmodel.cntrl_inst.write(status, wdata, UVM_FRONTDOOR);
+
+     //Check 'dv' and 'mv' Values
 		 dv = regmodel.cntrl_inst.get();                      // Get Desired Value
 		 mv = regmodel.cntrl_inst.get_mirrored_value();
-     `uvm_info("WRITE::5", $sformatf(" Desired Value = %0d, Mirrored Value = %0d ", dv, mv), UVM_NONE)
-
-     // Predict Value
-     regmodel.cntrl_inst.predict(4'h3);
-     dv = regmodel.cntrl_inst.get();                      // Get Desired Value
-		 mv = regmodel.cntrl_inst.get_mirrored_value();
-     `uvm_info("PREDICT::3", $sformatf(" Desired Value = %0d, Mirrored Value = %0d ", dv, mv), UVM_NONE)
-
-     // Mirror Value
-     regmodel.cntrl_inst.mirror(status, UVM_CHECK);
-     dv = regmodel.cntrl_inst.get();                      // Get Desired Value
-		 mv = regmodel.cntrl_inst.get_mirrored_value();
-     `uvm_info("MIRROR", $sformatf(" Desired Value = %0d, Mirrored Value = %0d ", dv, mv), UVM_NONE)
+     `uvm_info("WRITE::FRONTDOOR", $sformatf(" Desired Value = %0d, Mirrored Value = %0d ", dv, mv), UVM_NONE)
 
  endtask
 endclass
-
-
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -568,10 +553,16 @@ endfunction
 task body;
   uvm_status_e   status;
   bit [3:0] rdata;
+  bit [3:0] dv, mv;     // Desired Value & Mirrored Values
+   
    //////working with control
-  for(int i = 0; i < 5 ; i++) begin
-   regmodel.cntrl_inst.read(status, rdata);
-  end
+   regmodel.cntrl_inst.read(status, rdata, UVM_FRONTDOOR);
+
+     //Check 'dv' and 'mv' Values
+		 dv = regmodel.cntrl_inst.get();                      // Get Desired Value
+		 mv = regmodel.cntrl_inst.get_mirrored_value();
+     `uvm_info("READ::FRONTDOOR", $sformatf(" Desired Value = %0d, Mirrored Value = %0d ", dv, mv), UVM_NONE)
+
  endtask
 
 
@@ -773,8 +764,11 @@ endfunction
 virtual task run_phase(uvm_phase phase);
 phase.raise_objection(this);
 
+// Write (FRONTDOOR)
 cwr.regmodel = e.regmodel;
 cwr.start(e.agent_inst.seqr);
+
+// Read (FRONTDOOR)
 crd.regmodel = e.regmodel;
 crd.start(e.agent_inst.seqr);
 
